@@ -1,0 +1,213 @@
+Dim count As Integer
+Dim toggle_Check As Boolean
+Dim toggle_Check2 As Boolean
+Dim Time_check As Boolean
+Dim Question_one As Integer
+Dim Question_all As Integer
+Dim first_check As Boolean
+'Worksheets(3).Range("A2").Value 문제수
+'Worksheets(3).Range("B2").Value 시간
+'Worksheets(3).Range("C2").Value Time체크값
+'Worksheets(3).Range("D2").Value 총시간
+
+Private Sub Label5_Click()
+
+End Sub
+
+Private Sub ListBox1_Click()
+If Not ListBox1.ListIndex = 0 And toggle_Check = False And toggle_Check2 = False Then
+    start_Button1.Enabled = True
+Else
+    start_Button1.Enabled = False
+End If
+End Sub
+
+
+Private Sub question_Title_Click()
+
+End Sub
+
+Private Sub TextBox2_Change()
+
+End Sub
+
+Private Sub Time_stat_Click()
+If Not first_check = False Then
+    If Time_check = False Then
+        Time_check = True
+        Time_stat.Caption = "한문제당"
+        Label6.Caption = Question_one
+    Else
+        Time_check = False
+        Time_stat.Caption = "모든문제"
+        Label6.Caption = Question_all
+    End If
+
+    Worksheets(3).Range("C2").Value = Time_check
+Else
+    first_check = True
+End If
+End Sub
+
+Private Sub ToggleButton1_Click()
+    Dim mod_Val As Double
+    
+    If toggle_Check = False Then
+        start_Button1.Enabled = False
+        TextBox1.Enabled = True
+        TextBox1.Visible = True
+        Label3.Visible = False
+        TextBox1.Value = Label3.Caption
+        toggle_Check = True
+        ToggleButton1.Caption = "저장"
+        
+    ElseIf TextBox1.Value > 0 And TextBox1.Value <= 100 Then
+        mod_Val = TextBox1.Value
+        If mod_Val + 1 = Round(mod_Val) Or mod_Val = Round(mod_Val) Then
+            If ToggleButton1.Value = True Then
+                ToggleButton1.Value = False
+            End If
+            
+            TextBox1.Enabled = False
+            TextBox1.Visible = False
+            Label3.Visible = True
+            Label3.Caption = TextBox1.Value
+            toggle_Check = False
+            Worksheets(3).Range("A2").Value = Label3.Caption
+            ToggleButton1.Caption = "수정"
+            If Not start_Button1.Enabled = False Or (ListBox1.ListIndex > 0 And toggle_Check2 = False) Then
+                start_Button1.Enabled = True
+            End If
+        Else
+            MsgBox prompt:="1에서 100까지의 정수를 입력하세요!", Buttons:=vbExclamation, Title:="오류"
+            toggle_Check = False
+        End If
+    Else
+        MsgBox prompt:="1에서 100까지의 정수를 입력하세요!", Buttons:=vbExclamation, Title:="오류"
+        toggle_Check = False
+    End If
+    
+End Sub
+
+Private Sub ToggleButton2_Click()
+    Dim mod_Val As Double
+    
+    If toggle_Check2 = False Then
+        start_Button1.Enabled = False
+        TextBox2.Enabled = True
+        TextBox2.Visible = True
+        Label6.Visible = False
+        TextBox2.Value = Label6.Caption
+        toggle_Check2 = True
+        ToggleButton2.Caption = "저장"
+        Time_stat.Locked = True
+    ElseIf TextBox2.Value > 0 And TextBox2.Value <= 10000 Then
+        mod_Val = TextBox2.Value
+        If mod_Val + 1 = Round(mod_Val) Or mod_Val = Round(mod_Val) Then
+            If ToggleButton2.Value = True Then
+                ToggleButton2.Value = False
+            End If
+            
+            Time_stat.Locked = False
+            TextBox2.Enabled = False
+            TextBox2.Visible = False
+            Label6.Visible = True
+            Label6.Caption = TextBox2.Value
+            toggle_Check2 = False
+            ToggleButton2.Caption = "수정"
+            
+            If Time_check = False Then
+                Question_all = TextBox2.Value
+                Worksheets(3).Range("D2").Value = Question_all
+            Else
+                Question_one = TextBox2.Value
+                Worksheets(3).Range("B2").Value = Question_one
+            End If
+            
+            
+            If Not start_Button1.Enabled = False Or (ListBox1.ListIndex > 0 And toggle_Check = False) Then
+                start_Button1.Enabled = True
+            End If
+        Else
+            MsgBox prompt:="1에서 10000까지의 정수를 입력하세요!", Buttons:=vbExclamation, Title:="오류"
+            toggle_Check2 = False
+        End If
+    Else
+        MsgBox prompt:="1에서 10000까지의 정수를 입력하세요!", Buttons:=vbExclamation, Title:="오류"
+        toggle_Check2 = False
+    End If
+End Sub
+
+Private Sub ToggleButton3_Click()
+
+End Sub
+
+Private Sub UserForm_Initialize()
+'처음 실행시 동작되는 부분
+
+Application.ScreenUpdating = False
+Application.Calculation = xlCalculationManual
+Application.EnableEvents = False
+
+Sheets("유형입력").Select
+Dim empty_Check As Boolean: empty_Check = False
+Dim max_Count As Integer: max_Count = 0
+Dim i As Integer: i = 1
+
+Do While Not (empty_Check)
+    If (Cells(i, 1) = "") Then
+        max_Count = i '현재개수
+        empty_Check = True
+    End If
+    i = i + 1
+Loop
+    
+With Me.ListBox1
+    .ColumnCount = 3
+    .List = Worksheets("유형입력").Range(Cells(1, "A"), Cells(max_Count - 1, "C")).Value
+End With
+
+toggle_Check = False
+Label3.Caption = Worksheets(3).Range("A2").Value '문제수
+Time_check = Worksheets(3).Range("C2").Value '시간 체크
+Question_one = Worksheets(3).Range("B2").Value '문제당시간불러오기
+Question_all = Worksheets(3).Range("D2").Value '총시간불러오기
+
+If Time_check = False Then '모든문제일때
+    Label6.Caption = Question_all
+    Time_stat.Caption = "모든문제"
+    first_check = True
+Else
+    Label6.Caption = Question_one
+    Time_stat.Caption = "한문제당"
+    first_check = False
+End If
+
+Time_stat.Value = Time_check
+
+Sheets("시작화면").Select
+Application.ScreenUpdating = True
+Application.Calculation = xlCalculationAutomatic
+Application.EnableEvents = True
+End Sub
+
+Private Sub start_Button1_Click()
+    Unload Me
+    count = ListBox1.ListIndex
+    Userform1.count = count
+    Userform1.max_Count = Label3.Caption
+    Userform1.Time_Next = Label6.Caption
+    Userform1.Time_check = Time_check
+    Userform1.Show
+End Sub
+
+Private Sub TextBox1_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+    If KeyCode = 13 Then '엔터키를 눌렀을때 동작
+        ToggleButton1_Click
+    End If
+End Sub
+Private Sub TextBox2_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+    If KeyCode = 13 Then '엔터키를 눌렀을때 동작
+        ToggleButton2_Click
+    End If
+End Sub
