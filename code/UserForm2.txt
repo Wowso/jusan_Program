@@ -1,0 +1,175 @@
+Public max_Count As Integer
+Public question As String
+Public question_type As String
+Public Timer_end As Integer
+Public Timer_check As Boolean
+Dim result_Array() As Double
+Dim question_Array() As Double
+Dim c_Answer As Integer '정답
+Dim inc_Answer As Integer '오답
+
+Private Sub Label10_Click()
+
+End Sub
+
+Private Sub Label12_Click()
+
+End Sub
+
+Private Sub Label15_Click()
+
+End Sub
+
+Private Sub Label18_Click()
+
+End Sub
+
+Private Sub Label4_Click()
+
+End Sub
+
+Private Sub Label5_Click()
+
+End Sub
+
+Private Sub ListBox1_Click()
+    Index = ListBox1.ListIndex
+    If Not Index = 0 Then
+    Dim Label_arr1 As String: Label_arr1 = Comma(question_Array(Index - 1, 0)) 'Trim(Str(question_Array(Index - 1, 0)))
+    Dim Label_arr2 As String: Label_arr2 = ""
+    
+        For i = 1 To 9
+            If Not question_Array(Index - 1, i) = 0 Then
+                
+                If question_type = "곱셈" Then
+                    Sign = "×"
+                ElseIf question_type = "나눗셈" Then
+                    Sign = "÷"
+                ElseIf question_type = "가산" Then
+                    Sign = "+"
+                Else
+                    If question_Array(Index - 1, i) < 0 Then
+                        Sign = ""
+                    Else
+                        Sign = "+"
+                    End If
+                End If
+                
+                If Len(Label_arr1) < 25 Then
+                    Label_arr1 = Label_arr1 & Sign
+                Else
+                    Label_arr2 = Label_arr2 & Sign
+                End If
+                
+                If Len(Label_arr1) < 25 Then
+                    Label_arr1 = Label_arr1 & Comma(question_Array(Index - 1, i))
+                Else
+                    Label_arr2 = Label_arr2 & Comma(question_Array(Index - 1, i))
+                End If
+            End If
+
+        Next
+        Label14.Visible = True
+        Label14.Caption = Label_arr1
+        Label15.Visible = True
+        Label15.Caption = Label_arr2
+        Label17.Caption = Comma(result_Array(Index - 1, 1))
+        'For i = 5 To 9
+        '    Label_arr2 = Label_arr2 & Str(question_Array(Index - 1, i))
+        'Next
+    End If
+End Sub
+
+Private Sub Time_end_Click()
+
+End Sub
+
+Private Sub UserForm_Activate()
+    Label12.Caption = Str(max_Count) + "문제 푸셨습니다."
+    Label4.Caption = question
+    Label5.Caption = question_type
+    If Len(Label4.Caption) > 12 Then
+        Label4.Font.Size = 20
+    Else
+        Label4.Font.Size = 24
+    End If
+End Sub
+Public Function Array_insert(ByRef arr() As Double, ByRef arr2() As Double)
+    RArray = arr
+    result_Array = arr2
+End Function
+
+Private Sub UserForm_Layout()
+    c_Answer = 0
+    inc_Answer = 0
+    ListBox1.ColumnCount = 4
+    ReDim arr(0 To max_Count, 1 To 4) As String
+    arr(0, 1) = "번호"
+    arr(0, 2) = "입력한 답"
+    arr(0, 3) = "정답"
+    arr(0, 4) = "확인"
+    For i = 1 To max_Count
+        arr(i, 1) = i '번호
+        arr(i, 2) = result_Array(i - 1, 0) '내가입력한 답
+        arr(i, 3) = result_Array(i - 1, 1) '정답
+        If arr(i, 2) = arr(i, 3) Then
+            If arr(i, 3) = 0 Then
+                arr(i, 4) = "풀지않음"
+            Else
+                arr(i, 4) = "정답"
+                c_Answer = c_Answer + 1
+            End If
+        Else
+            arr(i, 4) = "오답"
+            inc_Answer = inc_Answer + 1
+        End If
+        
+    Next
+    ListBox1.List = arr
+    Label9.Caption = c_Answer
+    Label10.Caption = inc_Answer
+    If Timer_check = False Then
+        Time_end.Caption = timer_Change(Timer_end)
+    End If
+End Sub
+
+Public Sub data_Input(ByRef question_Arr() As Double, ByRef result_Arr() As Double)
+    question_Array = question_Arr
+    result_Array = result_Arr
+End Sub
+Private Function Comma(ByVal arr_term As Double) As String
+    i = 1
+
+    str_Cap = arr_term
+    cap_Len = Len(str_Cap)
+    fir_Len = Len(str_Cap)
+    If arr_term < 0 Then
+        cap_Len = cap_Len - 1
+    End If
+    
+    Do While cap_Len > 3
+        str_Cap = Left(str_Cap, fir_Len - (3 * i)) & "," & Right(str_Cap, (3 * i) + (i - 1))
+        cap_Len = cap_Len - 3
+        i = i + 1
+    Loop
+    
+    Comma = str_Cap
+    
+End Function
+Private Function timer_Change(ByVal time_V As Integer) As String
+    Dim min As Integer, sec As Integer: sec = time_V
+    Dim col As String: col = ":"
+    min = 0
+    
+    Do While sec >= 60
+        min = min + 1
+        sec = sec - 60
+    Loop
+    
+    If sec < 10 Then
+        col = ":0"
+    End If
+    
+    timer_Change = min & col & sec
+End Function
+
